@@ -1,0 +1,1795 @@
+                  # Command for Activity of 16/04/2021
+library(haven)
+allmerged<-read_dta("C:/Users/ooo/Desktop/PhD_New/agnutri16062021.dta")
+library(summarytools)
+freq(allmerged2$hworeda)
+freq(allmerged$seasnal)
+freq(allmerged$dds)
+summary(allmerged$hdds)
+summary(allmerged$dds)
+summary(allmerged$croppd)
+summary(allmerged$locationmns7_m)
+freq(allmerged2$hsex1_f)
+
+library(lattice)
+library(merTools)
+library(carData)
+library(car)
+
+library(coefplot)
+# Lambda.pois<-fitdistr(allmerged$dds,"Poisson")
+# (Lambda.pois)
+# rm(quasipossion)
+
+require(MASS)
+library(Matrix)
+library(lme4)
+library(merTools)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod10)
+coef(Mod10)
+coef(Mod14)
+plot(Mod10)
+ICC(outcome = "dds",group = "hworeda",data =allmerged)
+plot(ranef(Mod10))
+lattice::dotplot(ranef(Mod10, postVar = TRUE))
+lattice::dotplot(ranef(Mod10, condVar = TRUE))
+qqp(allmerged$dds,"norm")
+qqp(allmerged$dds,"lnorm")
+library(ggplot2)
+head(fortify(Mod10))
+residplot<-ggplot(aes(x=croppd,y=.resid),data=Mod10)+geom_point()+geom_hline(yintercept =0)+labs(x="Crop production count",y="Residual")
+residplot
+qqp(allmerged$croppd,"norm")
+qqp(allmerged$croppd,"lnorm")
+Mod10a<-glmer(dds~croppd+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+coef(Mod10a)
+summary(Mod10a)
+plot(Mod10a)
+Mod10b<-lmer(dds~(1|hworeda)+(1|hworeda:round),data =allmerged)
+summary(Mod10b)
+Mod11<-glmer(dds~seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod11)
+
+Mod12<-glmer(dds~croppd+seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod12)
+plot(Mod12)
+ICC(outcome = "dds",group = "hworeda",data =allmerged)
+Mod13<-glmer(dds~croppd+seasnal+locationmns7_m+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod13)
+plot(Mod13)
+Mod13a<-glmer(dds~croppd+seasnal+locationmns7_m+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+summary(Mod13a)
+
+Mod14<-glmer(dds~croppd+seasnal+locationmns7_m+croppd*seasnal*locationmns7_m+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod14)
+coef(Mod14)
+plot(Mod14)
+lattice::dotplot(ranef(Mod14, condVar = TRUE))
+Mod14a<-glmer(dds~croppd+seasnal+locationmns7_m+croppd*seasnal*locationmns7_m+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+summary(Mod14a)
+plot(Mod14a)
+lattice::dotplot(ranef(Mod14a, condVar = TRUE))
+Mod15a<-glmer(dds~croppd+seasnal+croppd*seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod15a)
+
+Mod16<-lmer(dds~1+seasnal+(1|hworeda),REML =FALSE,data =allmerged)
+summary(Mod16)
+poisson<-fitdistr(allmerged$dds,"Poisson")
+(poisson)
+qqp(allmerged$dds,distribution="pois",lambda=poisson$estimate)
+
+require(MASS)
+mod20<-glm.nb(dds~croppd,data =allmerged)
+summary(mod20)
+resid(mod20)
+mod21<-lme(dds~croppd,data =allmerged,family = poisson)
+summary(mod21)
+mod11<-glm.nb(dds~croppd+(1|hworeda),data =allmerged,family = poisson)
+summary(mod11)
+resids.dev=predict(Mod10)
+resids.dev
+resid(Mod10)
+res.pearson.model.10=residuals(Mod10, type="pearson")
+qqp(res.pearson.model.10)
+
+qqplot(resid(Mod10))
+residualPlots(Mod10)
+plot(Mod10)
+coefplot(Mod10)
+
+qqp(allmerged$dds,distribution="pois",lambda=Lambda.pois$estimate, xlab = "Poisson Quantiles",ylab = "Count of DDS",main = "Q-Q plots DDS vs Poiasson Quantiles")
+
+
+# Copied from library29032021
+
+str(allmerged)
+head(allmerged[70:178])
+head(allmerged$round)
+head(allmerged$seasnal)
+
+str(allmerged$round)
+
+#----Frequencies-----
+library(summarytools)
+freq(allmerged$round)
+freq(allmerged$seasnal)
+freq(allmerged$hworeda)
+str(allmerged$dds)
+freq(allmerged$dds)
+freq(allmerged$locationhrs6_m)
+freq(allmerged$locationmns6_m)
+freq(allmerged$locationmns7_m)
+freq(allmerged$locationhrs7_m)
+
+#-----Recoding 99 and 98 to 'Na'----
+
+class(allmerged$locationmns6_m)
+allmerged$locationmns6_m[allmerged$locationmns6_m==(99)]<-"NA"
+allmerged$locationmns6_m[allmerged$locationmns6_m==(98)]<-"NA"
+list(allmerged$locationmns6_m)
+allmerged$locationhrs6_m[allmerged$locationhrs6_m==(99)]<-"NA"
+allmerged$locationhrs6_m[allmerged$locationhrs6_m==(98)]<-"NA"
+list(allmerged$locationhrs6_m)
+str(allmerged$locationhrs6_m)
+
+allmerged$locationmns7_m[allmerged$locationmns7_m==(99)]<-"NA"
+allmerged$locationmns7_m[allmerged$locationmns7_m==(98)]<-"NA"
+list(allmerged$locationmns7_m)
+allmerged$locationhrs7_m[allmerged$locationhrs7_m==(99)]<-"NA"
+allmerged$locationhrs7_m[allmerged$locationhrs7_m==(98)]<-"NA"
+freq(allmerged$locationhrs6_m)
+freq(allmerged$locationmns6_m)
+freq(allmerged$locationmns7_m)
+freq(allmerged$locationhrs7_m)
+list(allmerged$locationhrs7_m)
+list(allmerged$locationhrs7_m)
+#----After recoding------
+library(summarytools)
+freq(allmerged$locationhrs7_m,reports.nas=TRUE)
+mean(as.numeric(allmerged$locationmns6_m),na.rm = T)
+summary(as.numeric(allmerged$locationmns6_m),na.rm = T)
+summary(as.numeric(allmerged$locationmns7_m),na.rm = T)
+class(allmerged$locationhrs7_m)
+mean(allmerged$locationhrs7_m,na.rm = T)
+summary(allmerged$locationhrs7_m)
+
+library(carData)
+library(car)
+library(Matrix)
+library(lme4)
+
+plot(allmerged$dds,allmerged$croppd,xlab = "Dietary Diversity Counts",ylab = "Crop Variety Score",main = "Correlation of DDS and CPS", xlim = c(0,10),ylim = c(0,30),pch=20,col="blue") 
+scatter.smooth(allmerged$dds~allmerged$croppd, xlab = "Crop Variety Score",ylab = "Estimated Dietary Diversity Counts",main = "Smoothed curve of DDS from CPS")
+croprandom<-allmerged$croppd+rnorm(4800,mean = 0,sd=1)
+croprandom[1:10]
+croprandom2<-allmerged$croppd+rnorm(4800,mean = 0,sd=0.05)
+ddshift<-allmerged$dds+rnorm(4800,mean = 0,sd=0.5)
+
+croprandom2[1:10]
+par(mfrow=c(1,1))
+plot(allmerged$dds,allmerged$croppd,xlab = "Dietary Diversity Counts",ylab = "Crop Variety Score",main = "Correlation of DDS and CPS", xlim = c(0,10),ylim = c(0,30),pch=20,col="blue")
+
+plot(ddshift,allmerged$croppd,xlab = "Dietary Diversity shifted",ylab = "Crop Variety Score",main = "Correlation of DDS(0,0.5) and CPS", xlim = c(0,10),ylim = c(0,30),pch=20,col="green") 
+plot(allmerged$dds,croprandom,xlab = "Dietary Diversity Counts",ylab = "Crop Variety Score",main = "Correlation of DDS and CPS", xlim = c(0,10),ylim = c(0,30),pch=20,col="blue") 
+plot(allmerged$dds,croprandom2,xlab = "Dietary Diversity Counts",ylab = "Crop Variety Score",main = "Correlation of DDS and CPS", xlim = c(0,10),ylim = c(0,30),pch=10,col="green") 
+p1<-plot(allmerged$dds,allmerged$croppd,xlab = "Dietary Diversity Counts",ylab = "Crop Variety Score",main = "Correlation of DDS and CPS", xlim = c(0,10),ylim = c(0,30),pch=20,col="blue") 
+
+dim(allmerged[which(allmerged$dds==4 & allmerged$croppd==10),9202])
+
+
+ls("locationhrs7_m")
+#------------------ ssssddff ------------------
+
+
+library(dplyr)
+library(tidyselect)
+install.packages("ggpubr")
+
+subset(allmerged, starts_with("l"))
+
+
+tidyselect::vars_select(names(allmerged), starts_with('loc', ignore.case = F)) 
+
+
+par(mfrow=c(1,1))
+p2<-plot(allmerged$dds,allmerged$householdcount_f,xlab = "Dietary Diversity Counts",ylab = "HH size",main = "Correlation of DDS and HH Size")
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+ggdensity(allmerged$croppd, main="Crop production",xlab = "crop production score")
+ggqqplot(allmerged$croppd)
+shapiro.test(allmerged$croppd)
+summary(allmerged$croppd)
+sd(allmerged$croppd)
+ggqqplot(allmerged$logcrp)
+shapiro.test(allmerged$logcrp)
+#croptrans<-(allmerged$croppd-3.14)/3.11
+#croptrans
+#is.na(croptrans)
+#which(is.na(croptrans))
+ggqqplot(allmerged$cptrans)
+shapiro.test(allmerged$cptrans)
+ggdensity(allmerged$croptrans)
+
+#---------regressions-------
+# model 1 to 10
+mod1<-lm(dds~croppd, data =allmerged)
+summary(mod1)
+mod2<-glm(dds~croppd, data =allmerged)
+summary(mod2)
+mod3<-glm(dds~croppd,family=poisson, data =allmerged)
+summary(mod3)
+mod4<-glm(dds~croppd+householdcount_f,family=poisson, data =allmerged)
+summary(mod4)
+mod5<-glm(dds~croppd+householdcount_f:croppd*householdcount_f,family=poisson, data =allmerged)
+summary(mod5)
+mod6<-glm(dds~croppd+householdcount_f+locationhrs7_m,family=poisson, data =allmerged)
+summary(mod6)
+mod7<-glm(dds~croppd+householdcount_f+locationmns6_m:croppd*householdcount_f*locationmns6_m,family=poisson, data =allmerged)
+summary(mod7)
+library(nlme)
+Mod8<-lme(fixed =dds~1, random = ~1|hworeda, data =allmerged)
+summary(Mod8)
+Mod9<-lme(fixed =dds~croppd, random = ~1|hworeda, data =allmerged)
+summary(Mod9)
+library(carData)
+library(car)
+require(MASS)
+qqp(allmerged$dds,distribution="norm")
+library(Matrix)
+library(lme4)
+library(lattice)
+library(merTools)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod10)
+
+str(allmerged$locationmns6_m)
+str(allmerged$locationhrs6_m)
+str((allmerged$locationmns6_m[11:31]))
+str((allmerged$locationhrs6_m[11:31]))
+
+#-------Correlations---------
+library(ISLR)
+pairs(allmerged[9324:9326])
+cor(allmerged[9324:9326])
+#-----others------
+summary(allmerged$householdcount_f)
+
+library(carData)
+library(car)
+require(MASS)
+poisson<-fitdistr(allmerged$dds,"Poisson")
+(poisson)
+qqp(allmerged$dds,distribution="pois",lambda=poisson$estimate)
+summary(allmerged$householdcount_f)
+cor(allmerged$dds,allmerged$croppd)
+residualPlots(mod1)
+residualPlots(mod2)
+residualPlots(mod3)
+residualPlots(mod4)
+residualPlots(mod5)
+qqPlot(mod1)
+#------Data exploring------
+plot(allmerged$locationmns6_m,allmerged$locationhrs6_m,xlab = "Time in minutes",ylab = "Time in hours",pch=20,col="red")
+plot(allmerged$locationmns7_m,allmerged$locationhrs7_m,xlab = "Time in minutes",ylab = "Time in hours",pch=20,col="red") 
+
+
+#-----Codes for reporting/10/03/2020------
+
+library(carData)
+library(car)
+require(MASS)
+poisson<-fitdistr(allmerged$dds,"Poisson")
+(poisson)
+qqp(allmerged$dds,distribution="pois",lambda=poisson$estimate)
+
+library(nlme)
+Mod8<-lme(fixed =dds~1, random = ~1|hworeda, data =allmerged)
+summary(Mod8)
+qqp(allmerged$dds,distribution="norm",xlab = "Normal Quantiles",ylab = "Count of DDS",main = "Q-Q plots DDS vs Normal Quantiles")
+Mod9<-lme(fixed =dds~croppd, random = ~1|hworeda, data =allmerged)
+summary(Mod9)
+library(ggplot2)
+
+head(fortify(mod1))
+residplot<-ggplot(aes(x=croppd,y=.resid),data=mod1)+geom_point()+geom_hline(yintercept = 0)+labs(x="Crop production count",y="Residual")
+residplot
+qqp(allmerged$dds,distribution="pois",lambda=Lambda.pois$estimate, xlab = "Poisson Quantiles",ylab = "Count of DDS",main = "Q-Q plots DDS vs Poiasson Quantiles")
+library(Matrix)
+library(lme4)
+library(lattice)
+library(merTools)
+library(carData)
+library(car)
+require(MASS)
+library(coefplot)
+Lambda.pois<-fitdistr(allmerged$dds,"Poisson")
+(Lambda.pois)
+#rm(quasipossion)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod10)
+Mod11<-glmer(dds~seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod11)
+Mod12<-glmer(dds~croppd+seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod12)
+Mod13<-glmer(dds~locationmns7_m+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod13)
+Mod14<-glmer(dds~croppd+seasnal+locationmns7_m+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod14)
+Mod15<-glmer(dds~croppd+seasnal+(1|hworeda):croppd*seasnal,data =allmerged,family = poisson)
+summary(Mod15)
+mod20<-glm.nb(dds~croppd,data =allmerged)
+summary(mod20)
+resid(mod20)
+mod21<-lme(dds~croppd,data =allmerged,family = poisson)
+summary(mod21)
+mod11<-glm.nb(dds~croppd+(1|hworeda),data =allmerged,family = poisson)
+summary(mod11)
+resids.dev=predict(Mod10)
+resids.dev
+resid(Mod10)
+res.pearson.model.10=residuals(Mod10, type="pearson")
+qqp(res.pearson.model.10)
+
+qqplot(resid(Mod10))
+residualPlots(Mod10)
+plot(Mod10)
+coefplot(Mod10)
+
+qqp(allmerged$dds,distribution="pois",lambda=Lambda.pois$estimate, xlab = "Poisson Quantiles",ylab = "Count of DDS",main = "Q-Q plots DDS vs Poiasson Quantiles")
+stripplot(dds ~ croppd|hworeda,allmerged, type=c('k','p','l'),layout=c(3,3), index.cond = function(x,y)max(y))
+xyplot(dds ~ croppd|round,allmerged, type=c('k','p','l'),layout=c(2,2), index.cond = function(x,y)max(y))
+#xyplot(x, data, ...)
+#dotplot(x, data, ...)
+#barchart(x, data, ...)
+#stripplot(x, data, ...)
+#bwplot(x, data, ...)
+#-----Data extraction by rounds------
+round1=allmerged[which(allmerged$round==1),]
+round2=allmerged[which(allmerged$round==2),]
+round3=allmerged[which(allmerged$round==3),]
+round4=allmerged[which(allmerged$round==4),]
+library(summarytools)
+freq(round1$hworeda)
+freq(round2$hworeda)
+freq(round3$hworeda)
+freq(round4$hworeda)
+summary(round1$dds)
+summary(round2$dds) 
+summary(round3$dds) 
+summary(round4$dds) 
+#-----Round 1------
+mod1<-lm(dds~croppd, data =round1)
+summary(mod1)
+mod3<-glm(dds~croppd,family=poisson, data =round1)
+summary(mod3)
+mod4<-glm(dds~croppd+householdcount_f,family=poisson, data =round1)
+summary(mod4)
+mod5<-glm(dds~croppd+householdcount_f:croppd*householdcount_f,family=poisson, data =round1)
+summary(mod5)
+#plot(round1$householdcount_f,allmerged$croppd,reports.nas=TRUE)
+mod6<-glm(dds~croppd+householdcount_f+locationmns7_m,family=poisson, data =round1)
+summary(mod6)
+mod7<-glm(dds~croppd+householdcount_f+locationmns7_m:croppd*householdcount_f*locationmns7_m,family=poisson, data =round1)
+summary(mod7)
+library(nlme)
+Mod8<-lme(fixed =dds~1, random = ~1|hworeda, data =round1)
+summary(Mod8)
+Mod9<-lme(fixed =dds~croppd, random = ~1|hworeda, data =round1)
+summary(Mod9)
+library(carData)
+library(car)
+require(MASS)
+qqp(round1$dds,distribution="norm")
+
+library(Matrix)
+library(lme4)
+library(lattice)
+library(merTools)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =round1,family = poisson)
+summary(Mod10)
+qqp(allmerged$dds,distribution="pois",lambda=Lambda.pois$estimate, xlab = "Poisson Quantiles",ylab = "Count of DDS",main = "Q-Q plots DDS vs Poiasson Quantiles")
+library(ggplot2)
+head(fortify(mod1))
+residplot<-ggplot(aes(x=croppd,y=.resid),data=mod1)+geom_point()+geom_hline(yintercept = 0)+labs(x="Crop production count",y="Residual")
+residplot
+#------Round 2-----
+mod1<-lm(dds~croppd, data =round2)
+summary(mod1)
+mod2<-glm(dds~croppd, data =round2)
+summary(mod2)
+mod3<-glm(dds~croppd,family=poisson, data =round2)
+summary(mod3)
+mod4<-glm(dds~croppd+householdcount_f,family=poisson, data =round2)
+summary(mod4)
+mod5<-glm(dds~croppd+householdcount_f:croppd*householdcount_f,family=poisson, data =round2)
+summary(mod5)
+mod6<-glm(dds~croppd+householdcount_f+locationhrs7_m,family=poisson, data =round2)
+summary(mod6)
+mod7<-glm(dds~croppd+householdcount_f+locationmns6_m:croppd*householdcount_f*locationmns6_m,family=poisson, data =round2)
+summary(mod7)
+library(nlme)
+Mod8<-lme(fixed =dds~1, random = ~1|hworeda, data =round2)
+summary(Mod8)
+Mod9<-lme(fixed =dds~croppd, random = ~1|hworeda, data =round2)
+summary(Mod9)
+library(carData)
+library(car)
+require(MASS)
+qqp(round2$dds,distribution="norm")
+
+library(Matrix)
+library(lme4)
+library(lattice)
+library(merTools)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =round2,family = poisson)
+summary(Mod10)
+#-------Round 3-----
+mod1<-lm(dds~croppd, data =round3)
+summary(mod1)
+mod2<-glm(dds~croppd, data =round3)
+summary(mod2)
+mod3<-glm(dds~croppd,family=poisson, data =round3)
+summary(mod3)
+mod4<-glm(dds~croppd+householdcount_f,family=poisson, data =round3)
+summary(mod4)
+mod5<-glm(dds~croppd+householdcount_f:croppd*householdcount_f,family=poisson, data =round3)
+summary(mod5)
+mod6<-glm(dds~croppd+householdcount_f+locationhrs7_m,family=poisson, data =round3)
+summary(mod6)
+mod7<-glm(dds~croppd+householdcount_f+locationmns6_m:croppd*householdcount_f*locationmns6_m,family=poisson, data =round3)
+summary(mod7)
+library(nlme)
+Mod8<-lme(fixed =dds~1, random = ~1|hworeda, data =round3)
+summary(Mod8)
+Mod9<-lme(fixed =dds~croppd, random = ~1|hworeda, data =round3)
+summary(Mod9)
+library(carData)
+library(car)
+require(MASS)
+qqp(round3$dds,distribution="norm")
+
+library(Matrix)
+library(lme4)
+library(lattice)
+library(merTools)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =round3,family = poisson)
+summary(Mod10)
+#-----Round 4-----
+
+mod1<-lm(dds~croppd, data =round4)
+summary(mod1)
+mod2<-glm(dds~croppd, data =round4)
+summary(mod2)
+mod3<-glm(dds~croppd,family=poisson, data =round4)
+summary(mod3)
+mod4<-glm(dds~croppd+householdcount_f,family=poisson, data =round4)
+summary(mod4)
+mod5<-glm(dds~croppd+householdcount_f:croppd*householdcount_f,family=poisson, data =round4)
+summary(mod5)
+mod6<-glm(dds~croppd+householdcount_f+locationhrs7_m,family=poisson, data =round4)
+summary(mod6)
+mod7<-glm(dds~croppd+householdcount_f+locationmns6_m:croppd*householdcount_f*locationmns6_m,family=poisson, data =round4)
+summary(mod7)
+library(nlme)
+Mod8<-lme(fixed =dds~1, random = ~1|hworeda, data =round4)
+summary(Mod8)
+Mod9<-lme(fixed =dds~croppd, random = ~1|hworeda, data =round4)
+summary(Mod9)
+library(carData)
+library(car)
+require(MASS)
+qqp(round4$dds,distribution="norm")
+
+library(Matrix)
+library(lme4)
+library(lattice)
+library(merTools)
+Mod10<-glmer(dds~croppd+(1|hworeda),data =round4,family = poisson)
+summary(Mod10)
+
+
+#-----Exporting data-----
+write.csv(round1[1:5,1:5],"C:\\Users\\ooo\\Desktop\\ext.csv")
+
+xyplot(incidence/size ~ period|herd, cbpp, type=c('g','p','l'),layout=c(3,5), index.cond = function(x,y)max(y))
+
+
+
+# Analyses for 7/5/2021
+
+require(MASS)
+library(Matrix)
+library(lme4)
+library(merTools)
+library(lattice)
+library(merTools)
+library(carData)
+library(car)
+library(ggplot2)
+
+library(coefplot)
+#Lambda.pois<-fitdistr(allmerged$hdds,"Poisson")
+#(Lambda.pois)
+#rm(possion)
+
+#Regression of normalised crop production score,normalised distance to the market, seasonality as predictors of dds.
+
+Mod22<-glmer(dds~crpnor+seasnal+locnor+(1|hworeda)+(1|hworeda:years),data =allmerged,family = poisson)
+summary(Mod22)
+plot(Mod22)
+
+Mod23<-glmer(dds~crpnor+seasnal+locnor+crpnor*seasnal+(1|hworeda)+(1|hworeda:years),data =allmerged,family = poisson)
+summary(Mod23)
+plot(Mod23)
+
+Mod24<-glmer(dds~crpnor+seasnal+locnor+crpnor*locnor+(1|hworeda)+(1|hworeda:years),data =allmerged,family = poisson)
+summary(Mod24)
+plot(Mod24)
+
+Mod25<-glmer(dds~crpnor+seasnal+locnor+seasnal*locnor+(1|hworeda)+(1|hworeda:years),data =allmerged,family = poisson)
+summary(Mod25)
+plot(Mod25)
+
+Mod26<-glmer(dds~crpnor+seasnal+locnor+years+crpnor*locnor+(1|hworeda)+(1|hworeda:years),data =allmerged,family = poisson)
+summary(Mod26)
+plot(Mod26)
+exp(coef(Mod26))
+
+Mod27<-glmer(dds~crpnor+seasnal+locnor+crpnor*locnor+(1|hworeda)+(1|years),data =allmerged,family = poisson)
+summary(Mod27)
+plot(Mod27)
+resids.dev=predict(Mod27)
+resids.dev
+resid(Mod27)
+res.pearson.model.27=residuals(Mod27, type="pearson")
+qqp(res.pearson.model.27)
+
+resids.dev2=predict(Mod27)
+resids.dev2
+resid(Mod27)
+res.deviance.model.27=residuals(Mod27, type="deviance")
+hist(allmerged$hdds)
+Mod28<-glmer(dds~crpnor+seasnal+locnor+seasnal*crpnor*locnor+(1|hworeda)+(1|years),data =allmerged,family = poisson)
+summary(Mod28)
+plot(Mod28)
+mu <- predict(Mod28, type = "response")
+mu
+exp <- sum(dpois(x = 0, lambda = mu))
+round(exp)
+sum(allmerged$dds < 1)
+res.pearson.model.28=residuals(Mod28, type="pearson")
+qqp(res.pearson.model.28)
+
+res.deviance.model.28=residuals(Mod28, type="deviance")
+qqp(res.pearson.model.28)
+
+library(summarytools)
+freq(allmerged$hsex1_f)
+freq(allmerged$heduc1_f)
+freq(allmerged$householdcount_f)
+summary(allmerged$householdcount_f)
+
+Mod29<-glmer(dds~crpnor+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+(1|hworeda)+(1|years),data =allmerged,family = poisson)
+summary(Mod29)
+
+Mod30<-glmer(dds~crpnor+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal+(1|hworeda)+(1|years),data =allmerged,family = poisson)
+summary(Mod30)
+
+Mod31<-glmer(dds~crpnor+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal+hsex1_f*heduc1_f+(1|hworeda)+(1|years),data =allmerged,family = poisson)
+summary(Mod31)
+
+Mod32<-glmer(hdds~crpnor+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod32)
+
+
+
+#Regression with normalized total value of livestok production in Birr
+
+
+Mod33<-glmer(hdds~ntlvbirr+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod33)
+print
+cor(allmerged$hdds, ntlvbirr)
+
+Mod34<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal*ntlvbirr+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34)
+print(Mod34, correlation=TRUE)
+plot(Mod34)
+
+summary(allmerged$tlvbirr)
+
+ntlvbirr=(allmerged$tlvbirr-mean(allmerged$tlvbirr))/sd(allmerged$tlvbirr)
+summary(ntlvbirr)
+mean(ntlvbirr)
+
+hist(allmerged$tlvbirr)
+hist(ntlvbirr)
+
+library(glmmTMB)
+
+table(allmerged$hdds)
+
+hist(allmerged$croppd, nclass=10)
+mean(allmerged$croppd)
+sd(allmerged$croppd)
+x=(allmerged$croppd-mean(allmerged$croppd))/sd(allmerged$croppd)
+mean(x)
+sd(x)
+hist(x,nclass=10)
+plot(x, allmerged$croppd)
+
+# 21052021
+table(allmerged$dds)
+install.packages("AER")
+install.packages("lmtest")
+install.packages("zoo")
+install.packages("sandwich")
+install.packages("survival")
+
+library(AER)
+plot(table(allmerged$hdds))
+sum(allmerged$dds <= 2)
+sum(allmerged$dds > 2)
+
+#library(pscl)
+#mod.hurdle <- hurdle(allmerged$dds ~ ., data = allmerged)
+#summary(mod.hurdle)
+library(lme4)
+Mod22a<-glmer(dds~croppd+seasnal+locnor+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+summary(Mod22a)
+
+qqp(res.deviance.model.27)
+hist(allmerged$crpnor)
+summary(allmerged$croppd)
+summary(allmerged$crpnor)
+mean(allmerged$crpnor)
+mean(allmerged$croppd)
+
+resididual(diviance, poisson())
+
+#Mod10<-glmer(dds~croppd+(1|hworeda),data =allmerged,family = poisson)
+#coef(Mod10)
+#coef(Mod14)
+#plot(Mod10)
+#ICC(outcome = "dds",group = "hworeda",data =allmerged)
+#plot(ranef(Mod10))
+#lattice::dotplot(ranef(Mod10, postVar = TRUE))
+#lattice::dotplot(ranef(Mod10, condVar = TRUE))
+#qqp(allmerged$dds,"norm")
+#qqp(allmerged$dds,"lnorm")
+#library(ggplot2)
+#head(fortify(Mod10))
+#residplot<-ggplot(aes(x=croppd,y=.resid),data=Mod10)+geom_point()+geom_hline(yintercept =0)+labs(x="Crop production count",y="Residual")
+#residplot
+#qqp(allmerged$croppd,"norm")
+#qqp(allmerged$croppd,"lnorm")
+#Mod10a<-glmer(dds~croppd+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+#coef(Mod10a)
+#summary(Mod10a)
+#plot(Mod10a)
+#Mod10b<-lmer(dds~(1|hworeda)+(1|hworeda:round),data =allmerged)
+summary(Mod10b)
+#Mod11<-glmer(dds~seasnal+(1|hworeda),data =allmerged,family = poisson)
+#summary(Mod11)
+
+Mod12<-glmer(dds~croppd+seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod12)
+plot(Mod12)
+ICC(outcome = "dds",group = "hworeda",data =allmerged)
+Mod13<-glmer(dds~croppd+seasnal+locationmns7_m+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod13)
+plot(Mod13)
+Mod13a<-glmer(dds~croppd+seasnal+locationmns7_m+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+summary(Mod13a)
+
+Mod14<-glmer(dds~croppd+seasnal+locationmns7_m+croppd*seasnal*locationmns7_m+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod14)
+coef(Mod14)
+plot(Mod14)
+lattice::dotplot(ranef(Mod14, condVar = TRUE))
+Mod14a<-glmer(dds~croppd+seasnal+locationmns7_m+croppd*seasnal*locationmns7_m+(1|hworeda)+(1|hworeda:round),data =allmerged,family = poisson)
+summary(Mod14a)
+plot(Mod14a)
+lattice::dotplot(ranef(Mod14a, condVar = TRUE))
+Mod15a<-glmer(dds~croppd+seasnal+croppd*seasnal+(1|hworeda),data =allmerged,family = poisson)
+summary(Mod15a)
+
+Mod16<-lmer(dds~1+seasnal+(1|hworeda),REML =FALSE,data =allmerged)
+summary(Mod16)
+poisson<-fitdistr(allmerged$dds,"Poisson")
+(poisson)
+qqp(allmerged$dds,distribution="pois",lambda=poisson$estimate)
+
+# Year formation 
+
+round1=allmerged[which(allmerged$round==1),]
+round2=allmerged[which(allmerged$round==2),]
+round3=allmerged[which(allmerged$round==3),]
+round4=allmerged[which(allmerged$round==4),]
+
+# After HDDS
+
+freq(allmerged$hdds)
+summary(allmerged$hdds)
+table(allmerged$hdds)
+plot(table(allmerged$hdds))
+Mod31a<-glmer(hdds~crpnor+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal+hsex1_f*heduc1_f+(1|hworeda)+(1|years),data =allmerged,family = poisson)
+summary(Mod31a)
+
+ICC(outcome = "hdds",group = "years",data =allmerged)
+
+Mod32<-glmer(hdds~crpnor+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod32)
+
+min(allmerged$hdds)
+max(allmerged$hdds)
+range(allmerged$hdds)
+sum(allmerged$hdds)
+prod(allmerged$hdds)
+
+
+help.start()
+?abs
+help("?")
+4 < 3
+TRUE + FALSE + TRUE
+ls()
+install.packages(Rcmdr)
+x <- seq(4, 10, 2)
+x
+rep(3, 12)
+rep(x, 2)
+rep(3:5, 1:3)
+seq(along = x)
+x <- c(Water = 3, Coke = 5, Beer = 2)
+x["Coke"] #-> 5
+x <- 1:10 #-> 1 2 3 4 5 6 7 8 9 10
+x[5] <- 8 #-> 1 2 3 4 8 6 7 8 9 10
+x[9:10] <- 10:9 #-> 1 2 3 4 5 6 
+# matrix(data = NA, nr7 8 10 9
+x[] <- 2 #-> 2 2 2 2 2 2 2 2 2 2
+x <- 2 #-> 2ow = 4, ncol = 3, byrow = FALSE)
+
+X <- matrix(c(4, 7, 3, 8, 9, 2), nrow = 3) # column-wise
+X
+Y <- matrix(c(4, 7, 3, 8, 9, 2), nrow = 3, byrow = TRUE)
+Y
+Z <- matrix(c(4, 7, 3, 8, 9, 2), ncol = 3)
+Z
+t(Z)
+X[1,]
+X[,1]
+Z[1,3]
+X <- matrix(1:4, 2)
+X
+X[1, 1]
+X[1, 1, drop=FALSE]
+X <- array(1:60, dim = c(3, 5, 4))
+X
+X[2, 2, 2]
+
+X <- array(1:60, dim = c(3, 5, 2, 2))
+X
+X[2, 3, 1, 2]
+LNames <- data.frame(ID = c(43678, 88475, 88766, 89045),Lastname = c("Troschke", "Busse", "Michaelis", "Schoffer"))
+LNamen
+Secondyears
+merge(Secondyears, LNamen, all = TRUE)
+trt <- factor(rep(c("Control", "Treated"), c(3, 4)))
+str(trt)
+mode(trt)
+length(trt)
+table(trt)
+x <- 6
+if(x == 5){ # if x = 5 :
+  x <- x + 1 # increase x by 1
+  y <- 3 # set y to 3
+} else # otherwise:
+  y <- 7
+x
+y
+
+ifelse(x == c(5, 6), c("A1", "A2"), c("A3", "A4"))
+x <- c(-2:2)
+ifelse(x < 0, -x, x)
+numbers <- replicate(1000, mean(runif(100)))
+hist(numbers) # Histogram of the means
+i <- 0
+repeat{
+  i <- i + 1 # increase i by 1
+  if(i == 5) break # stop, if i=3
+}
+i
+while(i > 1)
+  i <- i - 1
+i
+
+x <- c(3, 6, 4, 8, 0) # vector of length 5 (=length(x))
+for(i in x)
+  print(sqrt(i))
+
+for(i in seq(along = x)){ # for all i in vector seq(along=x)
+  x[i] <- x[i]^2 # square the i-th element of x
+  print(x[i]) # and print it to the console
+}
+
+X <- matrix(c(4, 7, 3, 8, 9, 2), nrow = 3)
+X
+# maxima of all rows:
+erg <- numeric(nrow(X))
+for(i in 1:nrow(X)){
+  erg[i] <- max(X[i,])
+}
+# or simpler
+apply(X, 1, max) # row maxima
+apply(X, 1, range) # column extreme
+
+
+QS <- function(x){
+  sum(x^2)
+}
+apply(X, 1, QS)
+apply(X, 1, function(x) sum(x^2))
+rowSums(X^2)
+diag(X %*% t(X))
+L <- list(x = 1:10, y = 1:5)
+L
+lapply(L, mean)
+(1+2+3+4+5+6+7+8+9+10)/10
+sapply(L, mean)
+warpbreaks
+tapply(warpbreaks$breaks, warpbreaks$tension, mean)
+tapply(warpbreaks$breaks, warpbreaks[, -1], mean)
+tapply(warpbreaks$breaks, warpbreaks[, -1], var)
+
+hist(allmerged$hdds)
+plot(sort(allmerged$hdds))
+library("glmmTMB")
+?glmmTMB
+  library(stats4)
+library("bbmle") ## for AICtab
+## cosmetic
+library(Matrix)
+library(lme4)
+library(MASS)
+Mod34<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*ntlvbirr+ crpnor*seasnal+ crpnor* locnor+ crpnor* hsex1_f+ crpnor* heduc1_f+ crpnor* householdcount_f+ ntlvbirr* seasnal+ ntlvbirr* locnor + ntlvbirr* hsex1_f+ ntlvbirr* heduc1_f+ ntlvbirr* householdcount_f+ seasnal* locnor+ seasnal* hsex1_f+ seasnal* heduc1_f+ seasnal* householdcount_f+ locnor* hsex1_f+ locnor* heduc1_f+ locnor* householdcount_f+ hsex1_f* heduc1_f+ hsex1_f* householdcount_f+ heduc1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34)
+print(Mod34, correlation=TRUE)
+Mod34a<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*ntlvbirr+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34a)
+Mod34aa<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34aa)
+Mod34b<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*seasnal+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34b)
+Mod34c<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor* locnor+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34c)
+Mod34d<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34d)
+
+Mod34e<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34e)
+
+Mod34f<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34f)
+
+Mod34g<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* seasnal+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34g)
+
+Mod34h<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* locnor+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34h)
+
+Mod34i<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34i)
+
+Mod34j<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34j)
+
+Mod34k<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34k)
+
+Mod34l<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34l)
+
+Mod34m<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* locnor+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34m)
+
+Mod34n<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34n)
+
+Mod34o<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34o)
+
+Mod34p<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34p)
+
+Mod34q<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ locnor* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34q)
+
+Mod34r<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ locnor* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34r)
+
+Mod34s<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ locnor* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34s)
+
+Mod34t<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34t)
+
+Mod34u<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ hsex1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34u)
+
+Mod34w<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ heduc1_f+householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34w)
+
+Mod34z<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+crpnor*householdcount_f+ntlvbirr* hsex1_f+ntlvbirr* householdcount_f+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34z)
+plot(Mod34z)
+
+Mod34x<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+crpnor*seasnal+crpnor*householdcount_f+ntlvbirr* hsex1_f+ntlvbirr* householdcount_f+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+summary(Mod34x)
+
+Mod34<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*ntlvbirr+ crpnor*seasnal+ crpnor* locnor+ crpnor* hsex1_f+ crpnor* heduc1_f+ crpnor* householdcount_f+ ntlvbirr* seasnal+ ntlvbirr* locnor + ntlvbirr* hsex1_f+ ntlvbirr* heduc1_f+ ntlvbirr* householdcount_f+ seasnal* locnor+ seasnal* hsex1_f+ seasnal* heduc1_f+ seasnal* householdcount_f+ locnor* hsex1_f+ locnor* heduc1_f+ locnor* householdcount_f+ hsex1_f* heduc1_f+ hsex1_f* householdcount_f+ heduc1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged,family = poisson)
+
+Mod35<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+
+                 crpnor*seasnal*ntlvbirr+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),
+               data =allmerged2,ziformula=~.,family=list(family="truncated_poisson",link="log"))
+summary(Mod35)
+Mod36<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal*ntlvbirr+hsex1_f*heduc1_f
+               +(1|hworeda:hhid)+(1|years),data =allmerged2,ziformula=~.,family=list(family="truncated_nbinom1",link="log"))
+summary(Mod36)
+Mod37<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+crpnor*seasnal*ntlvbirr+hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,ziformula=~.,family=list(family="truncated_nbinom2",link="log"))
+summary(Mod37)
+## after droping the 90 observations with zero hdds
+
+#Hardle model after droping of the 90 hhs with 0 hdds score
+
+library(haven)
+allmerged2<-read_dta("C:/Users/ooo/Desktop/PhD_New/agnutrinonzeroscore.dta")
+allmerged2$ntlvbirr=(allmerged2$tlvbirr-mean(allmerged$tlvbirr))/sd(allmerged2$tlvbirr)
+summary(allmerged2$ntlvbirr)
+
+#summary(allmerged2$sweai)
+
+str(allmerged2$crp)
+summary(allmerged2$crp)
+plot(table(allmerged2$hdds))
+table(allmerged2$hdds)
+
+livestockp=(allmerged2$tlvbirr-mean(allmerged2$tlvbirr))/sd(allmerged2$tlvbirr)
+summary(livestockp)
+summary(allmerged2$hdds)
+
+library(dplyr)
+
+
+class(allmerged2)
+length(allmerged2)
+
+#Data management on Women's empowernment items
+
+allmerged2$g02a=ifelse(allmerged2$dmagprod_f==2,4,allmerged2$dmshdagprod_f)
+
+summary(allmerged2$g02a)
+View(allmerged2$g02a)
+View(allmerged$dmagprod_f)
+
+allmerged2$g02a=ifelse(allmerged2$dmagprod_f==2,4,allmerged2$dmshdagprod_f)
+allmerged2$g02b=ifelse(allmerged2$dmagprodinputs_f==2,4,allmerged2$dmshdagprodinputs_f)
+allmerged2$g02c=ifelse(allmerged2$dmagprodcrops_f==2,4,allmerged2$dmshdagprodcrops_f)
+allmerged2$g02d=ifelse(allmerged2$dmagprodmarket_f==2,4,allmerged2$dmshdagprodmarket_f)
+allmerged2$g02e=ifelse(allmerged2$dmlivestock_f==2,4, allmerged2$dmshdlivestock_f)
+allmerged2$g02f=ifelse(allmerged2$dmnonfarmact_f==2,4,allmerged2$dmshdnonfarmact_f)
+allmerged2$g02g=ifelse(allmerged2$dmemployment_f==2,4,allmerged2$dmshdemployment_f)
+allmerged2$g02h1=ifelse(allmerged2$dmhhexpmajor_f==2,4,allmerged2$dmshdhhexpmajor_f)
+allmerged2$g02h2=ifelse(allmerged2$dmhhexpminor_f==2,4,allmerged2$dmshdhhexpminor_f)
+allmerged2$g02m=ifelse(allmerged2$dmfamilyplan_f==2,4,allmerged2$dmshdfamilyplan_f)
+allmerged2$g02n=ifelse(allmerged2$dmhsgarden_f==2,4,allmerged2$dmshdhsgarden_f)
+
+#Avoiding and checking whteher the non response of G02  due to the response of 98 in G01
+
+#item1
+
+#allmerged2$g02a=ifelse(allmerged2$dmagprod_f==2,4,allmerged2$dmshdagprod_f)
+summary(allmerged2$g02a)
+summary(allmerged2[which(allmerged2$dmagprod_f!=98),]$g02a)
+
+#item2
+#allmerged2$g02b=ifelse(allmerged2$dmagprodinputs_f==2,4,allmerged2$dmshdagprodinputs_f)
+summary(allmerged2$g02b)
+summary(allmerged2[which(allmerged2$dmagprodinputs_f!=98),]$g02b)
+
+#item3
+#allmerged2$g02c=ifelse(allmerged2$dmagprodcrops_f==2,4,allmerged2$dmshdagprodcrops_f)
+summary(allmerged2$g02c)
+summary(allmerged2[which(allmerged2$dmagprodcrops_f!=98),]$g02c)
+
+#ite4
+
+#allmerged2$g02d=ifelse(allmerged2$dmagprodmarket_f==2,4,allmerged2$dmshdagprodmarket_f)
+summary(allmerged2$g02d)
+summary(allmerged2[which(allmerged2$dmagprodmarket_f!=98),]$g02d)
+
+#item5
+
+#allmerged2$g02e=ifelse(allmerged2$dmlivestock_f==2,4,allmerged2$dmshdlivestock_f)
+summary(allmerged2$g02e)
+summary(allmerged2[which(allmerged2$dmlivestock_f!=98),]$g02e)
+
+#item6
+
+#allmerged2$g02f=ifelse(allmerged2$dmnonfarmact_f==2,4,allmerged2$dmshdnonfarmact_f)
+summary(allmerged2$g02f)
+summary(allmerged2[which(allmerged2$dmnonfarmact_f!=98),]$g02f)
+
+#item7
+
+#allmerged2$g02g=ifelse(allmerged2$dmemployment_f==2,4,allmerged2$dmshdemployment_f)
+summary(allmerged2$g02g)
+summary(allmerged2[which(allmerged2$dmemployment_f!=98),]$g02g)
+
+#item8
+
+#allmerged2$g02h1=ifelse(allmerged2$dmhhexpmajor_f==2,4,allmerged2$dmshdhhexpmajor_f)
+summary(allmerged2$g02h1)
+summary(allmerged2[which(allmerged2$dmhhexpmajor_f!=98),]$g02h1)
+
+#item9
+
+#allmerged2$g02h2=ifelse(allmerged2$dmhhexpminor_f==2,4,allmerged2$dmshdhhexpminor_f)
+summary(allmerged2$g02h2)
+summary(allmerged2[which(allmerged2$dmhhexpminor_f!=98),]$g02h2)
+
+#item10
+
+#allmerged2$g02m=ifelse(allmerged2$dmfamilyplan_f==2,4,allmerged2$dmshdfamilyplan_f)
+summary(allmerged2$g02m)
+summary(allmerged2[which(allmerged2$dmfamilyplan_f!=98),]$g02m)
+
+#item11
+
+#allmerged2$g02n=ifelse(allmerged2$dmhsgarden_f==2,4,allmerged2$dmshdhsgarden_f)
+summary(allmerged2$g02n)
+summary(allmerged2[which(allmerged2$dmhsgarden_f!=98),]$g02n)
+
+
+#allmerged2$empscor=rowSums(allmerged2[,9139:9149],na.rm = T)
+
+allmerged2$empscore=rowSums(data.frame(a=allmerged2$g02a,b=allmerged2$g02b, c=allmerged2$g02c,d=allmerged2$g02d,e=allmerged2$g02e,
+                                         f=allmerged2$g02f, g=allmerged2$g02g, h1=allmerged2$g02h1, h2=allmerged2$g02h2, m=allmerged2$g02m, 
+                                         n=allmerged2$g02n),na.rm = T)
+
+    
+summary(allmerged2$g02d)                           
+                 
+dim(allmerged2)
+head(allmerged2[,9139:9153])
+
+allmerged2$nonmis=c()
+for (i in 1:4710) {
+ 
+  allmerged2$nonmis[i]=sum(!is.na(allmerged2[i,9139:9149]))
+  
+}
+
+allmerged2$meanscore=allmerged2$empscore/allmerged2$nonmis
+#
+
+#End empowernment Score
+
+twovars<-data.frame(allmerged2$dmagprod_f,allmerged2$dmshdagprod_f)
+twovars
+
+
+mean(allmerged2$g02a,na.rm = T)
+mean(allmerged2$g02b,na.rm = T)
+mean(allmerged2$g02c,na.rm=T)
+mean(allmerged2$g02d,na.rm=T)
+mean(allmerged2$g02e,na.rm=T)
+mean(allmerged2$g02f,na.rm=T)
+mean(allmerged2$g02g,na.rm=T)
+mean(allmerged2$g02h1,na.rm=T)
+mean(allmerged2$g02h2,na.rm=T)
+mean(allmerged2$g02m,na.rm=T)
+mean(allmerged2$g02n,na.rm=T)
+table(allmerged2$g02a)
+
+g02missings=(is.na(allmerged2$g02a))
+View(g02missings)
+tapply(allmerged2$g02a, allmerged2$round, mean, na.rm = T)
+tapply(allmerged2$g02b, allmerged2$round, mean, na.rm = T)
+
+#allmerged2$fitem=ifelse(is.na(allmerged2$g02a)==T, mean(allmerged2$g02a),allmerged2$g02a)
+#summary(allmerged2$fitem)
+
+allmerged2$g02a=ifelse(is.na(allmerged2$g02a)==T, mean(allmerged2$g02a,na.rm = T),allmerged2$g02a)
+summary(allmerged2$g02a)
+allmerged2$g02b=ifelse(is.na(allmerged2$g02b)==T, mean(allmerged2$g02b),allmerged2$g02b)
+
+summary(allmerged2$g02b)
+
+tapply(allmerged2$g02a, allmerged2$round, mean, na.rm = T)
+
+View(allmerged2$g02a)
+
+dmshdagprodinputs_f
+dmshdagprodcrops_f
+dmshdagprodmarket_f
+dmshdlivestock_f
+dmshdnonfarmact_f
+dmshdemployment_f
+dmshdhhexpmajor_f
+dmshdfamilyplan_f
+dmshdhsgarden_f
+table(allmerged2$dmagprod_f)
+mean(allmerged2$dmshdagprod_f)
+
+hist(allmerged2$hdds, xlab = "hdds", ylab = "Freq. of hdds", main = "histogram of hdds")
+table(allmerged2$hdds)
+summary(allmerged2$crp)
+hist(allmerged2$crp, xlab = "HH variety of crop produced normalized", ylab = "Freq. of crp", main = "histogram of crp")
+
+summary(livestockp)
+hist(livestockp)
+
+hist(livestockp,xlab = "HH variety of crop produced", ylab = "Freq. of crp", main = "histogram of crp" )
+summary(allmerged2$locnor)
+summary(allmerged2$locationmns7_m)
+hist(allmerged2$locationmns7_m, xlab = "Time to local markets in minutes", ylab = "Freq. of time to market", main = "histogram of Time2Market")
+table(allmerged2$harvest)
+table(allmerged2$hsex)
+table(allmerged2$heduc1_f)
+hist(allmerged2$heduc1_f)
+table(allmerged2$hworeda)
+boxplot(allmerged2$crp~allmerged2$hworeda, data=allmerged2)
+
+library(glmmTMB)
+
+Mod41<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+
+                   (1|hworeda:hhid)+(1|years),
+                 data =allmerged2,ziformula=~.,family=list(family="truncated_poisson",link="log"))
+summary(Mod41)
+
+Mod42<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+(1|hworeda:hhid)+(1|years), 
+               data =allmerged2, ziformula = ~0, weights = NULL,offset = NULL,contrasts = NULL,na.action = na.fail,se =TRUE,verbose = FALSE, 
+               doFit = TRUE, REML = FALSE,start = NULL,map = NULL,sparseX = NULL, family="truncated_poisson")
+Mod44<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+
+                 (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(Mod44)
+
+allmergedfake<-allmerged2
+allmergedfake[4071,"hdds"]=0
+allmergedfake[4071,"hdds"]
+fit_zipoisson <- glmmTMB(hdds~crpnor+(1|hworeda:hhid)+(1|years),data =allmerged2,ziformula=~1,family=poisson)
+summary(fit_zipoisson)
+
+#############################################################################################################
+
+Mod38y<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*ntlvbirr+ crpnor*seasnal+ crpnor* locnor+ crpnor* hsex1_f+ crpnor* heduc1_f+ crpnor* householdcount_f+ ntlvbirr* seasnal+ ntlvbirr* locnor+ ntlvbirr* hsex1_f+ ntlvbirr* heduc1_f+ ntlvbirr* householdcount_f+ seasnal*locnor+ seasnal* hsex1_f+ seasnal* heduc1_f+ seasnal* householdcount_f+ locnor* hsex1_f+ locnor* heduc1_f+ locnor* householdcount_f+ hsex1_f* heduc1_f+ hsex1_f* householdcount_f+ heduc1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod38y)
+summary(allmerged$locationmns7_m)
+print(Mod38y, correlation=TRUE)
+
+Mod38<-glmer(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*ntlvbirr+ crpnor*seasnal+ crpnor* locnor+ crpnor* hsex1_f+ crpnor* heduc1_f+ crpnor* householdcount_f+ ntlvbirr* seasnal+ ntlvbirr* locnor + ntlvbirr* hsex1_f+ ntlvbirr* heduc1_f+ ntlvbirr* householdcount_f+ seasnal* locnor+ seasnal* hsex1_f+ seasnal* heduc1_f+ seasnal* householdcount_f+ locnor* hsex1_f+ locnor* heduc1_f+ locnor* householdcount_f+ hsex1_f* heduc1_f+ hsex1_f* householdcount_f+ heduc1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod38)
+print(Mod38, correlation=TRUE)
+
+Mod39a<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ 
+                crpnor*ntlvbirr+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39a)
+
+Mod39aa<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39aa)
+xtabs(~croppd+householdcount_f,data =allmerged2)
+plot(xtabs(~croppd+householdcount_f,data =allmerged2))
+Mod39b<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*seasnal+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39b)
+Mod39c<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor* locnor+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39c)
+Mod39d<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39d)
+
+Mod39e<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39e)
+
+Mod39f<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39f)
+Mod39g<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* seasnal+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39g)
+Mod39h<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* locnor+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39h)
+Mod39i<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39i)
+
+Mod39j<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39j)
+
+Mod39k<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ ntlvbirr* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39k)
+Mod39l<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* locnor+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39l)
+Mod39m<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39m)
+Mod39n<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39n)
+Mod39o<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ seasnal* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39o)
+Mod39p<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ locnor* hsex1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family =poisson)
+summary(Mod39p)
+Mod39q<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ 
+                locnor* heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39q)
+
+Mod39r<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ locnor* householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39r)
+Mod39s<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ hsex1_f*heduc1_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39s)
+Mod39t<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ hsex1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family= poisson)
+summary(Mod39t)
+Mod39u<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ heduc1_f+heduc1_f*householdcount_f+(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39u)
+Mod39z<-glmer((hdds-1)~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ crpnor*householdcount_f+ntlvbirr* hsex1_f+ ntlvbirr* householdcount_f+ seasnal* householdcount_f + hsex1_f*heduc1_f +(1|hworeda:hhid)+(1|years),data =allmerged2,family = poisson)
+summary(Mod39z)
+
+
+library(ggplot2)
+
+##library(pscl)
+##library(sandwich)
+##library(lmtest)
+##coeftest(Mod38, vcov=sandwich)
+## fit_zipoisson <- glmmTMB(NCalls~(FT+ArrivalTime)*SexParent+offset(log(BroodSize))+(1|Nest),data=Owls,ziformula=~1,family=poisson)
+fit_zipoisson <- glmmTMB(hdds~crpnor+(1|hworeda:hhid)+(1|years),data =allmerged,ziformula=~1,family=poisson)
+summary(fit_zipoisson)
+## fit_zipoisson1 <- glmmTMB(hdds~crpnor+(1|hworeda:hhid)+(1|years),data =allmerged,ziformula=~0,family=poisson)
+## summary(fit_zipoisson1)
+hardlepoisson<-update(fit_zipoisson, ziformula=~.,data =allmerged,family= truncated_poisson)
+summary(hardlepoisson)
+AICtab(Mod34,Mod35,Mod36,Mod37, Mod38)
+
+####
+xtabs(~croppd+householdcount_f,data =allmerged2)
+
+plot(xtabs(~croppd+householdcount_f,data =allmerged2))
+summary(allmerged2$crpnor)
+allmerged2$ntlvbirr=ntlvbirr
+summary(allmerged2$seasnal)
+summary(allmerged2$locnor)
+summary(allmerged2$heduc1_f)
+
+
+#Predict: Prediction of dds by varying hhcount and the normalized crop diversity by model 39a
+
+predictdata=data.frame(crpnor=rep(seq(-1,7,length=200),13),hsex1_f=rep(0,200*13), 
+                       ntlvbirr=rep(-0.44,200*13),seasnal=rep(0,13*200),locnor=rep(0.73,200*13),
+heduc1_f=rep(2.4,200*13),hworeda=rep(0,200*13),hhid=rep(0,200*13),years=rep(0,200*13),householdcount_f=rep(c(1:13),each=200))
+
+predictdata$predict.dds= predict(Mod39a,newdata=predictdata,type="response", allow.new.levels = TRUE)
+str(predictdata)
+head(predictdata, 9)
+summary(predictdata$predict.dds)
+co=1:13
+plot(0,0,xlim=c(-1,7),ylim=c(1,9),type="n")
+
+for (i  in 1:13) {
+  
+  lines(predictdata[which(predictdata$householdcount_f==i),1], 
+        predictdata[which(predictdata$householdcount_f==i),11], col=co[i],type = "l")
+  }
+
+write.csv(predictdata, file="predictdata.csv", row.names = FALSE)
+
+# Prediction and by varying values of crpnor and ntlvbirr
+
+#Varying ntlvbirr
+
+predictdatabirr=data.frame(ntlvbirr=seq(-0.4403704,32.07267,length=200), crpnor=rep(-0.36656,200),
+                hsex1_f=rep(0,200), seasnal=rep(0,200),heduc1_f=rep(2.4,200),hworeda=rep(0,200),hhid=rep(0,200),years=rep(0,200))
+
+str(predictdatabirr)
+View(predictdatabirr)
+predict.ddsbirr= predict(TPmodfinal,newdata=predictdatabirr,type="response", allow.new.levels = TRUE)
+
+min(predict.ddsbirr)
+max(predict.ddsbirr)
+predict.ddsbirr=cbind(predict.ddsbirr, predictdatabirr)
+summary(predict.ddsbirr)
+
+#Varying crpnor
+
+predictdatacrp=data.frame(crpnor=seq(-1.00965,7.02894,length=200), ntlvbirr=rep(-0.4404,200),
+                          hsex1_f=rep(0,200), seasnal=rep(0,200),heduc1_f=rep(2.4,200),hworeda=rep(0,200),hhid=rep(0,200),years=rep(0,200))
+
+str(predictdatacrp)
+
+predict.ddscrp= predict(TPmodfinal,newdata=predictdatacrp,type="response", allow.new.levels = TRUE)
+
+min(predict.ddscrp)
+max(predict.ddscrp)
+
+summary(predict.ddscrp)
+#Plots
+
+
+library(ggplot2)
+
+predict.ddsbirr=cbind(predict.ddsbirr, predictdatabirr)
+
+plot(predictdatabirr$ntlvbirr,predictdatabirr$predict.ddsbirr, xlab= "ntlvbirr",ylab = "Predicted dds.birr", col="blue", type="l", xlim = c(-.5, 32.1), main = "pddscrp vs nlvbirr")
+
+cor(predict.ddsbirr, predictdatabirr)
+
+#birrplot+theme(plot.title = element_text(size=10))
+predict.ddscrp=cbind(predict.ddscrp, predictdatacrp)
+
+plot(predictdatacrp$crpnor,predictdatacrp$predict.ddscrp, xlab= "crpnor",ylab = "Predicted dds.crpnor", col="red", type="l", xlim = c(-1.1, 7.1), ylim=c(0,25), main = "pddscrp vs crp")
+hist(ntlvbirr)
+summary(predictdatacrp$crpnor)
+summary(predictdatabirr$ntlvbirr)
+summary(predict.ddscrp)
+summary(predict.ddsbirr)
+
+
+ggplot()+
+   geom_line(data=predictdatabirr, mapping = aes(x=ntlvbirr, y=predict.ddsbirr))
+
+with(PANSSLo, {
+  interaction.plot(time, treat, Y, fixed = TRUE, ylim=c(70, 100),
+                   lty=1, legend = FALSE, lwd=2,col=c("red","blue","green"), 
+                   ylab="Average PANSS Score",
+                   xlab="Time (Weeks)", trace.label="")
+  title(main=" Schizophrenia Trial Data: Mean Response Profiles")
+})
+legend("topright",legend=c("Standard","Placebo","Risperidone"),col=c("red","blue","green"),lty=1.2, cex=0.8)
+
+#?matplot
+
+#Predict1
+
+predictdata1=data.frame(crpnor=rep(-1:7,13),hsex1_f=rep(0,9*13), 
+                       ntlvbirr=rep(-0.44,9*13),seasnal=rep(0,13*9),locnor=rep(0.73,9*13),
+                       heduc1_f=rep(2.4,9*13),hworeda=rep(0,9*13),hhid=rep(0,9*13),years=rep(0,9*13),householdcount_f=rep(c(1:13),each=9))
+
+predictdata1$predict.dds1= predict(Mod39a,newdata=predictdata1,type="response", allow.new.levels = TRUE)
+str(predictdata1)
+head(predictdata1)
+summary(predictdata1$predict.dds1)
+co=1:3
+plot(0,0,xlim=c(1,13),ylim=c(1,9),type="n")
+
+for (i  in -1:7) {
+  
+  lines(predictdata1[which(predictdata1$crpnor==i),1], 
+        predictdata1[which(predictdata1$crpnor==i),11], col=co[i],type = "l")
+  
+}
+write.csv(predictdata1, file="predictdata1.csv", row.names = FALSE)
+
+#predictdata=predictdata[1:200,]
+#co=c("red", "blue", "green")
+#plot(predictdata$crpnor, predictdata$predict.dds,ylim = c(1,2))
+#for (i  in 1:3) {
+#  set.seed(1)
+# lines(predictdata[which(predictdata$householdcount_f==i),1], 
+#       predictdata[which(predictdata$householdcount_f==i),11], col=co[i],type = "p")
+# 
+#}
+
+
+head(predictdata$householdcount_f,200)
+summary(predictdata$predict.dds) 
+summary(predictdata$householdcount_f)     
+summary(predictdata$crpnor)
+
+ggpairs(data=predictdata, columns=1:3, title="trees data")
+
+library(ggplot)
+library(ggplot2)
+library(GGally)
+library(MASS)
+library(merTools)
+
+plot(allmerged2$crpnor~allmerged2$householdcount_f, main="Scatplot:Normalizedcropvariety 
+     vs household size",
+     xlab="HH Size", ylab="Normalized crops variety score", pch=8)
+abline(lm(allmerged2$crpnor~allmerged2$householdcount_f), col="blue") # regression line (y~x)
+lines(lowess(allmerged2$crablipnor,allmerged2$householdcount_f), col="red") # lowess line (x,y)
+
+cor(allmerged2$crpnor,allmerged2$householdcount_f)
+mean(allmerged2$crpnor)
+summary(allmerged2$crpnor)
+
+reg<-lm(allmerged2$crpnor~allmerged2$householdcount_f)
+summary(reg)
+
+abline(reg, col="green")
+library(carData)
+library(car)
+
+scatterplot(allmerged2$crpnor~allmerged2$householdcount_f | allmerged2$seasnal, data=allmerged2,
+            xlab="household size", ylab="food crop variety",
+            main="Scatter plot of crop vs hsize",
+            labels=row.names(allmerged2$seasnal))
+
+pairs(~(hdds-1)+crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f,data=allmerged2,
+      main="Simple Scatterplot Matrix")
+
+data(trees)
+trees
+ggpairs(data=trees, columns=1:3, title="trees data")
+ggplot(data = trees, aes(x = Girth, y = Volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "dodgerblue2") +
+  theme(panel.background = element_rect(fill = "white"),
+        axis.line.x=element_line(),
+        axis.line.y=element_line()) +
+  ggtitle("Linear Model Fitted to Data")
+
+plot(predictdata$crpnor,predictdata$predict.dds, xlab="crop score", ylab = "predicted dietary diversity")
+library(dplyr)
+summary(allmerged2$locationmns7_m)
+allmerged2$locationmns7_m
+update.packages()
+# Examples of zero-truncated Poisson regression: Hospital stay
+library(foreign)
+require(foreign)
+library(ggplot2)
+require(ggplot2)
+library(VGAM)
+require(VGAM)
+library(boot)
+require(boot)
+dat <- read.dta("https://stats.idre.ucla.edu/stat/data/ztp.dta")
+
+dat <- within(dat, {
+  hmo <- factor(hmo)
+  died <- factor(died)
+})
+
+summary(dat)
+ggplot(dat, aes(stay)) +
+  geom_histogram() +
+  scale_x_log10() +
+  binwidth = 30
+  facet_grid(hmo ~ died, margins=TRUE, scales="free_y")
+  
+  ggplot(dat, aes(factor(age), stay)) +
+    geom_violin() +
+    geom_jitter(size=1.5) +
+    scale_y_log10() +
+    stat_smooth(aes(x = age, y = stay, group=1), method="loess")
+  
+  ggplot(dat, aes(age, fill=died)) +
+    geom_histogram(binwidth=.5, position="fill") +
+    facet_grid(hmo ~ ., margins=TRUE)
+  
+  ggplot(dat, aes(factor(age), stay)) +
+    geom_smooth() +
+    geom_jitter(size=1.5) +
+    scale_y_log10() +
+    stat_smooth(aes(x = age, y = stay, group=1), method="loess")
+  m1 <- vglm(stay ~ age + hmo + died, family = pospoisson(), data = dat)
+  summary(m1)
+  
+  output <- data.frame(resid = resid(m1), fitted = fitted(m1))
+  ggplot(output, aes(fitted, resid)) +
+    geom_jitter(position=position_jitter(width=.25), alpha=.5) +
+    stat_smooth(method="loess")  
+
+  ggplot(output, aes(fitted, resid)) +
+    geom_jitter(position=position_jitter(width=.25), alpha=.5) +
+    stat_quantile(method="rq")  
+  
+  output <- within(output, {
+    broken <- cut(fitted, hist(fitted, plot=FALSE)$breaks)
+  })
+  
+  ggplot(output, aes(broken, resid)) +
+    geom_boxplot() +
+    geom_jitter(alpha=.25)  
+  dput(round(coef(m1),2))  
+  
+  f <- function(data, i) {
+    require(VGAM)
+    m <- vglm(formula = stay ~ age + hmo + died, family = pospoisson(),
+              data = data[i, ], coefstart = c(2.436, -0.014, -0.136, -0.204))
+    as.vector(t(coef(summary(m))[, 1:2]))
+  }
+  
+  set.seed(10)
+  res <- boot(dat, f, R = 1200, parallel = "snow", ncpus = 4)  
+res  
+parms <- t(sapply(c(1, 3, 5, 7), function(i) {
+  out <- boot.ci(res, index = c(i, i + 1), type = c("perc", "basic"))
+  with(out, c(Est = t0, pLL = percent[4], pUL = percent[5],
+              basicLL = basic[4], basicLL = basic[5]))
+}))
+row.names(parms) <- names(coef(m1))
+parms 
+expparms <- t(sapply(c(1, 3, 5, 7), function(i) {
+  out <- boot.ci(res, index = c(i, i + 1), type = c("perc", "basic"), h = exp)
+  with(out, c(Est = t0, pLL = percent[4], pUL = percent[5],
+              basicLL = basic[4], basicLL = basic[5]))
+}))
+## add row names
+row.names(expparms) <- names(coef(m1))
+## print results
+expparms
+newdata <- expand.grid(age = 1:9, hmo = factor(0:1), died = factor(0:1))
+newdata
+newdata$yhat <- predict(m1, newdata, type = "response")
+newdata$yhat
+
+ggplot(newdata, aes(x = age, y = yhat, colour = hmo))  +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~ died)
+#
+fpred <- function(data, i, newdata) {
+  require(VGAM)
+  m <- vglm(formula = stay ~ age + hmo + died, family = pospoisson(),
+            data = data[i, ], coefstart = c(2.436, -0.014, -0.136, -0.204))
+  predict(m, newdata, type = "response")
+}
+
+## set seed and run bootstrap with 1,200 draws
+set.seed(10)
+respred <- boot(dat, fpred, R = 1200, newdata = newdata,
+                parallel = "snow", ncpus = 4)
+
+## get the bootstrapped percentile CIs
+yhat <- t(sapply(1:nrow(newdata), function(i) {
+  out <- boot.ci(respred, index = i, type = c("perc"))
+  with(out, c(Est = t0, pLL = percent[4], pUL = percent[5]))
+}))
+
+## merge CIs with predicted values
+newdata <- cbind(newdata, yhat)
+newdata
+## graph with CIs
+ggplot(newdata, aes(x = age, y = yhat, colour = hmo, fill = hmo))  +
+  geom_ribbon(aes(ymin = pLL, ymax = pUL), alpha = .25) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~ died)
+
+#After 3 of September by truncated-Poisson
+
+library(glmmTMB)
+Mod44<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+
+                 (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(Mod44)
+
+TPmod1<-glmmTMB(hdds~1+(1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod1)
+
+TPmod2<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+
+summary(TPmod2)
+str(allmerged2$hsex1_f)
+head(allmerged2$hsex1_f)
+sum(allmerged2$hsex1_f)
+summary(allmerged2$crpnor)
+
+library(summarytools)
+TPmod3<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+crp*livestockp+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod3)
+
+TPmod4<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+crp*harvest+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod4)
+
+TPmod5<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+crp* hsex+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod5)
+
+TPmod6<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+crp*locnor+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod6)
+
+TPmod7<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+crp* heduc1_f+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod7)
+
+TPmod8<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+crp*householdcount_f+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod8)
+
+TPmod9<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+livestockp*harvest+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod9)
+
+TPmod10<-glmmTMB(hdds~crp+livestockp+locnor+heduc1_f+householdcount_f+harvest+hsex+agdecition+livestockp*locnor+
+                  (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod10)
+
+TPmod11<-glmmTMB(hdds~crp+livestockp+heduc1_f+locnor+harvest+hsex+agdecition+hsex*livestockp+
+                   (1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod11)
+
+TPmod11b<-glmmTMB(hdds~crp+livestockp+heduc1_f+locnor+harvest+hsex+agdecition+
+                    livestockp*hsex+harvest*locnor+(1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod11b)
+
+TPmod11upd1<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+hsex1_f+heduc1_f+householdcount_f+ntlvbirr* hsex1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod11upd1)
+
+TPmod11upd2<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+hsex1_f+heduc1_f+locnor+ntlvbirr* hsex1_f+
+                       (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod11upd2)
+
+#Final Model
+
+TPmodfinal1<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+hsex1_f+heduc1_f+locnor+ntlvbirr* hsex1_f+seasnal*locnor+
+                     (1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmodfinal1)
+
+TPmodfinal2<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+hsex1_f+heduc1_f+householdcount_f+ntlvbirr* hsex1_f+seasnal*locnor+
+                       (1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmodfinal2)
+
+TPmodfinal3<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+hsex1_f+heduc1_f+ntlvbirr* hsex1_f+seasnal*locnor+
+                       (1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmodfinal3)
+
+library(glmmTMB)
+table(allmerged2$sweai)
+hist(allmerged2$sweai, xlab = "degree of decission making on ag", ylab = "No of HHs", main = "Hist of degree of DM")
+livestockp<-ntlvbirr
+summary(livestockp)
+
+TPmodfinal<-glmmTMB(hdds~crp+livestockp+harvest+hsex+heduc1_f+locnor+meanscore+(1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmodfinal)
+
+#TPdec<-glmmTMB(hdds~crp+livestockp+harvest+hsex+heduc1_f+locnor+crp*agdecition+
+                      #(1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPdec)
+coef(TPmodfinal)
+install.packages("gapminder")
+install.packages("nycflights13")
+
+#hist(allmerged2$crpnor)
+#frequency(allmerged2$dmshdagprod_f)
+#head(allmerged2$dmshdagprod_f)
+#str(allmerged2$dmshdagprod_f)
+#hist(allmerged2$dmshdagprod_f)
+resi=residuals(TPmodfinal)
+summary(resi)
+qqnorm(resi)
+qqline(resi)
+
+TPmodfinali<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+hsex1_f+heduc1_f+ntlvbirr* hsex1_f,data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmodfinali)
+#Akaike Information Criterion
+
+AIC(TPmodfinal,TPmodfinali)
+
+ntlvbirr.min=min(ntlvbirr)
+ntlvbirr.min
+ntlvbirr.max=max(ntlvbirr)
+ntlvbirr.max
+
+# Mean values of the hdds
+exp(0.056)
+#log(mu)=1.666686+0.054620*crpnor+0.024625*ntlvbirr+0.074880*seasnal-0.078630*hsex1_f+0.002353*heduc1_f+0.083758*ntlvbirr*hsex1_f)
+summary(allmerged2$crpnor)
+head(allmerged2$seasnal)
+str(allmerged2$seasnal)
+
+#log (mu)
+
+logmu=1.647542+(0.055365*-0.36656)-( 0.024270*0.4404)+ 0.075586*1-(0.063835*1)+( 0.010371*15)+ 0.082674*(-0.4404*1)
+logmu
+#mu=exp(1.67+0.0546*crpnor+0.248*ntlvbirr+…)
+mu=exp(1.67)*exp(0.0546*crpnor)*exp(0.248*ntlvbir)
+mu=exp(1.647542)*exp(0.055365*-0.36656)*exp(-0.024270*0.4404)*exp(0.075586*1)*
+  exp(-0.063835*1)*exp(0.010371*15)*exp(0.082674*(-0.4404*1))
+mu
+resi=residuals(TPmodfinal,type="pearson")
+
+TPmod12<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ntlvbirr* heduc1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod12)
+
+TPmod13<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+ntlvbirr* householdcount_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod13)
+
+TPmod14<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+seasnal* hsex1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod14)
+
+TPmod15<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+seasnal* heduc1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod15)
+
+TPmod16<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+seasnal* locnor+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod16)
+
+TPmod17<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+locnor* hsex1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod17)
+
+TPmod18<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+locnor*heduc1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod18)
+
+TPmod19<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+locnor*householdcount_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod19)
+
+TPmod19<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+locnor*householdcount_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod19)
+
+TPmod20<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+hsex1_f*heduc1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod20)
+
+
+TPmod21<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+hsex1_f*householdcount_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod21)
+
+TPmod22<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+heduc1_f*householdcount_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod22)
+
+TPmod23<-glmmTMB(hdds~crpnor+ntlvbirr+seasnal+locnor+hsex1_f+heduc1_f+householdcount_f+
+                   crpnor * householdcount_f+ntlvbirr* hsex1_f+ntlvbirr* householdcount_f+hsex1_f*heduc1_f+
+                   (1|hworeda:hhid)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmod23)
+
+coplot(hdds~ crpnor|householdcount_f, type="p", data=allmerged2) 
+scatterplot(hdds~ crpnor|householdcount_f, data=allmerged2)
+library(gplots)    # Various programing tools for plotting data
+library(tseries)   # For timeseries analysis
+library(lmtest)    # For hetoroskedasticity analysis
+plotmeans(hdds~ crpnor|householdcount_f, data=allmerged2)
+
+# TOBIT MODELS
+
+library(ggplot2)
+require(ggplot2)
+library(GGally)
+
+library(VGAM)
+dat <- read.csv("https://stats.idre.ucla.edu/stat/data/tobit.csv")
+summary(dat)
+f <- function(x, var, bw = 15) {
+  dnorm(x, mean = mean(var), sd(var)) * length(var)  * bw
+}
+p <- ggplot(dat, aes(x = apt, fill=prog))
+p + stat_bin(binwidth=15) +
+  stat_function(fun = f, size = 1,
+                args = list(var = dat$apt))
+p + stat_bin(binwidth = 1) + stat_function(fun = f, size = 1, args = list(var = dat$apt,bw = 1))
+cor(dat[, c("read", "math", "apt")])
+ggpairs(dat[, c("read", "math", "apt")])
+summary(m <- vglm(apt ~ read + math + prog, tobit(Upper = 800), data = dat))
+ctable <- coef(summary(m))
+pvals <- 2 * pt(abs(ctable[, "z value"]), df.residual(m), lower.tail = FALSE)
+cbind(ctable, pvals)
+
+dat$yhat <- fitted(m)[,1]
+dat$rr <- resid(m, type = "response")
+dat$rp <- resid(m, type = "pearson")[,1]
+
+par(mfcol = c(2, 3))
+
+with(dat, {
+  plot(yhat, rr, main = "Fitted vs Residuals")
+  qqnorm(rr)
+  plot(yhat, rp, main = "Fitted vs Pearson Residuals")
+  qqnorm(rp)
+  plot(apt, rp, main = "Actual vs Pearson Residuals")
+  plot(apt, yhat, main = "Actual vs Fitted")
+})
+
+TPmodfinal<-glmmTMB(hdds~crp+livestockp+harvest+heduc1_f+agdecition+crp*agdecition
+                        +                        (1|hhid:hworeda)+(1|hworeda)+(1|years),data =allmerged2, zi=~1, family=truncated_poisson)
+summary(TPmodfinal)
